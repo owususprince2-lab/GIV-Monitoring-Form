@@ -1,628 +1,410 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>METE 451 Quiz</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-      const { useState, useEffect } = React;
-      
-      const AlertCircle = ({ className }) => (
-        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="8" x2="12" y2="12" />
-          <line x1="12" y1="16" x2="12.01" y2="16" />
-        </svg>
-      );
-      
-      const Lock = ({ className }) => (
-        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
-      );
-      
-      const CheckCircle = ({ className }) => (
-        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-          <polyline points="22 4 12 14.01 9 11.01" />
-        </svg>
-      );
-      
-      const Timer = ({ className }) => (
-        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12 6 12 12 16 14" />
-        </svg>
-      );
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GIV Examination Monitoring Form – KNUST</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #C9982A;
+    --green: #1B4D2E;
+    --black: #111111;
+    --offwhite: #F9F6F1;
+    --lightgray: #EBEBEB;
+    --midgray: #999;
+    --shadow: 0 4px 24px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--offwhite); color: var(--black); min-height: 100vh; padding: 0 0 60px 0; }
 
-      const QuizApp = () => {
-        const [view, setView] = useState("start");
-        const [studentName, setStudentName] = useState("");
-        const [indexNumber, setIndexNumber] = useState("");
-        const [currentQuestion, setCurrentQuestion] = useState(0);
-        const [answers, setAnswers] = useState({});
-        const [questionTimeLeft, setQuestionTimeLeft] = useState(20);
-        const [tabSwitches, setTabSwitches] = useState(0);
-        const [quizSubmitted, setQuizSubmitted] = useState(false);
-        const [adminPassword, setAdminPassword] = useState("");
-        const [showAdminLogin, setShowAdminLogin] = useState(false);
+  .header { background: var(--green); color: white; padding: 28px 40px 22px; display: flex; align-items: center; gap: 24px; border-bottom: 5px solid var(--gold); }
+  .header img { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3)); }
+  .header-text h1 { font-family: 'EB Garamond', serif; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px; line-height: 1.3; }
+  .header-text p { font-size: 0.82rem; color: rgba(255,255,255,0.80); margin-top: 4px; font-weight: 300; letter-spacing: 0.8px; text-transform: uppercase; }
 
-        const questions = [
-          {
-            id: 1,
-            type: "mcq",
-            question: "Hydrocyclone classification fundamentally differs from gravitational classification because the controlling field is predominantly:",
-            options: [
-              "radial inertial dominance",
-              "tangential centrifugal dominance",
-              "axial centrifugal dominance",
-              "radial gravitational dominance",
-            ],
-            correctAnswer: "tangential centrifugal dominance",
-          },
-          {
-            id: 2,
-            type: "mcq",
-            question: "The tangential or involuted feed entry in a hydrocyclone is primarily intended to:",
-            options: [
-              "stabilize overflow pressure",
-              "initiate rotational slurry motion",
-              "reduce feed turbulence",
-              "equalize particle velocities",
-            ],
-            correctAnswer: "initiate rotational slurry motion",
-          },
-          {
-            id: 3,
-            type: "mcq",
-            question: "Variation in the cross-sectional shape of the inlet pipe mainly influences classification through changes in:",
-            options: [
-              "particle density distribution",
-              "internal velocity profile",
-              "slurry viscosity gradient",
-              "centrifugal acceleration magnitude",
-            ],
-            correctAnswer: "internal velocity profile",
-          },
-          {
-            id: 4,
-            type: "mcq",
-            question: "The vortex finder extending below the feed chamber primarily ensures that:",
-            options: [
-              "underflow turbulence is minimized",
-              "overflow withdrawal occurs from the inner vortex",
-              "feed pressure losses are reduced",
-              "coarse particles bypass separation",
-            ],
-            correctAnswer: "overflow withdrawal occurs from the inner vortex",
-          },
-          {
-            id: 5,
-            type: "mcq",
-            question: "The inverted conical section of a hydrocyclone contributes to separation mainly by:",
-            options: [
-              "inducing axial pressure recovery",
-              "concentrating coarse particles toward the apex",
-              "reducing swirl intensity",
-              "increasing overflow stability",
-            ],
-            correctAnswer: "concentrating coarse particles toward the apex",
-          },
-          {
-            id: 6,
-            type: "mcq",
-            question: "Protective linings such as rubber, neoprene, or urethane are used in hydrocyclones primarily to:",
-            options: [
-              "increase hydraulic efficiency",
-              "reduce erosion from abrasive slurry",
-              "improve particle classification",
-              "regulate internal pressure gradients",
-            ],
-            correctAnswer: "reduce erosion from abrasive slurry",
-          },
-          {
-            id: 7,
-            type: "mcq",
-            question: "A hydraulically or pneumatically adjustable apex sleeve allows operational control primarily by altering:",
-            options: [
-              "feed turbulence intensity",
-              "underflow discharge restriction",
-              "vortex finder immersion depth",
-              "slurry density in the feed",
-            ],
-            correctAnswer: "underflow discharge restriction",
-          },
-          {
-            id: 8,
-            type: "mcq",
-            question: "In mineral processing, wet classification is generally preferred for fine particles because the fluid medium primarily enables separation based on:",
-            options: [
-              "particle charge differences",
-              "particle settling velocities",
-              "particle magnetic susceptibility",
-              "particle compressibility",
-            ],
-            correctAnswer: "particle settling velocities",
-          },
-          {
-            id: 9,
-            type: "mcq",
-            question: "Cyclones are commonly used in primary, secondary, and regrind circuits mainly because they:",
-            options: [
-              "maintain constant particle density",
-              "rapidly classify fine grinding products",
-              "reduce grinding energy directly",
-              "control chemical composition",
-            ],
-            correctAnswer: "rapidly classify fine grinding products",
-          },
-          {
-            id: 10,
-            type: "mcq",
-            question: "The cylindrical section of a hydrocyclone improves separation primarily because it:",
-            options: [
-              "stabilizes feed pressure fluctuations",
-              "increases slurry retention time",
-              "decreases centrifugal acceleration",
-              "reduces vortex instability",
-            ],
-            correctAnswer: "increases slurry retention time",
-          },
-          {
-            id: 11,
-            type: "mcq",
-            question: "The conical section angle influences cyclone performance mainly by affecting:",
-            options: [
-              "retention time and particle migration",
-              "feed velocity distribution",
-              "slurry viscosity gradient",
-              "overflow turbulence",
-            ],
-            correctAnswer: "retention time and particle migration",
-          },
-          {
-            id: 12,
-            type: "mcq",
-            question: "The D50C classification parameter represents a condition where:",
-            options: [
-              "separation efficiency is maximum",
-              "coarse particles dominate underflow",
-              "equal probability exists for reporting to either product",
-              "overflow particle size becomes constant",
-            ],
-            correctAnswer: "equal probability exists for reporting to either product",
-          },
-          {
-            id: 13,
-            type: "mcq",
-            question: "The use of reduced recovery curves in cyclone analysis allows comparison of performance because it:",
-            options: [
-              "removes dependence on feed density",
-              "normalizes particle size relative to cut size",
-              "eliminates slurry viscosity effects",
-              "corrects centrifugal acceleration",
-            ],
-            correctAnswer: "normalizes particle size relative to cut size",
-          },
-          {
-            id: 14,
-            type: "mcq",
-            question: "Thickening in mineral processing is mainly applied upstream of downstream processes to:",
-            options: [
-              "improve mineral liberation",
-              "adjust pulp density for subsequent operations",
-              "increase particle hardness",
-              "reduce slurry viscosity",
-            ],
-            correctAnswer: "adjust pulp density for subsequent operations",
-          },
-          {
-            id: 15,
-            type: "mcq",
-            question: "Sedimentation tests used in thickener design fundamentally establish how:",
-            options: [
-              "particle density affects grinding efficiency",
-              "settling velocity relates to vessel dimensions",
-              "slurry viscosity changes with pressure",
-              "particle shape controls cyclone separation",
-            ],
-            correctAnswer: "settling velocity relates to vessel dimensions",
-          },
-        ];
+  .title-band { background: var(--gold); color: var(--black); text-align: center; padding: 14px 20px; font-family: 'EB Garamond', serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
 
-        const ADMIN_PASSWORD = "admin123";
-        const TIME_PER_QUESTION = 20;
-        const TAB_SWITCH_PENALTY = 0.5;
+  .page { display: none; }
+  .page.active { display: block; }
 
-        useEffect(() => {
-          if (view === "quiz") {
-            const handleContextMenu = (e) => e.preventDefault();
-            document.addEventListener("contextmenu", handleContextMenu);
-            document.body.style.userSelect = "none";
-            document.body.style.webkitUserSelect = "none";
-            const handleVisibilityChange = () => {
-              if (document.hidden) setTabSwitches((prev) => prev + 1);
-            };
-            document.addEventListener("visibilitychange", handleVisibilityChange);
-            const handleCopy = (e) => e.preventDefault();
-            document.addEventListener("copy", handleCopy);
-            document.addEventListener("cut", handleCopy);
-            document.addEventListener("paste", handleCopy);
-            return () => {
-              document.removeEventListener("contextmenu", handleContextMenu);
-              document.removeEventListener("visibilitychange", handleVisibilityChange);
-              document.removeEventListener("copy", handleCopy);
-              document.removeEventListener("cut", handleCopy);
-              document.removeEventListener("paste", handleCopy);
-              document.body.style.userSelect = "auto";
-              document.body.style.webkitUserSelect = "auto";
-            };
-          }
-        }, [view]);
+  .container { max-width: 700px; margin: 36px auto; background: white; border-radius: 4px; box-shadow: var(--shadow); overflow: hidden; border-top: 4px solid var(--gold); }
+  .form-inner { padding: 36px 40px 40px; }
 
-        useEffect(() => {
-          if (view === "quiz" && questionTimeLeft > 0) {
-            const timer = setTimeout(() => setQuestionTimeLeft((prev) => prev - 1), 1000);
-            return () => clearTimeout(timer);
-          } else if (view === "quiz" && questionTimeLeft === 0) {
-            handleAutoNext();
-          }
-        }, [view, questionTimeLeft]);
+  .steps { display: flex; align-items: center; justify-content: center; gap: 0; padding: 20px 40px 0; background: white; }
+  .step-item { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 500; color: var(--midgray); }
+  .step-item.active { color: var(--green); }
+  .step-item.done { color: var(--gold); }
+  .step-circle { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--lightgray); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--midgray); }
+  .step-item.active .step-circle { border-color: var(--green); color: var(--green); }
+  .step-item.done .step-circle { border-color: var(--gold); color: var(--gold); background: #fff9ed; }
+  .step-line { width: 40px; height: 2px; background: var(--lightgray); margin: 0 6px; }
+  .step-line.done { background: var(--gold); }
 
-        const handleAutoNext = () => {
-          if (currentQuestion < questions.length - 1) {
-            setCurrentQuestion((prev) => prev + 1);
-            setQuestionTimeLeft(TIME_PER_QUESTION);
-          } else {
-            handleSubmitQuiz();
-          }
-        };
+  .section-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--green); margin-bottom: 16px; padding-bottom: 6px; border-bottom: 1px solid var(--lightgray); }
 
-        const handleStartQuiz = async () => {
-          if (!studentName.trim() || !indexNumber.trim()) {
-            alert("Please enter your name and index number");
-            return;
-          }
-          const startButton = document.querySelector("button");
-          if (startButton) startButton.disabled = true;
-          try {
-            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQ49ebOvpIuttMBXh7gkCRU857mK6T0Hr3v4yiEisPzHjwHdaPFyD744kWGVu81KymqA/exec";
-            const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=Sheet1`);
-            const data = await response.json();
-            const alreadyTaken = data.some((record) => String(record.indexNumber).trim() === String(indexNumber).trim());
-            if (alreadyTaken) {
-              alert("This index number has already been used to take the quiz. You cannot take the quiz again.");
-              if (startButton) startButton.disabled = false;
-              return;
-            }
-            setView("quiz");
-            setQuestionTimeLeft(TIME_PER_QUESTION);
-          } catch (error) {
-            console.error("Error checking index number:", error);
-            alert("Error checking records. Please try again or contact your instructor.");
-            if (startButton) startButton.disabled = false;
-          }
-        };
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 
-        const handleAnswerChange = (questionId, answer) => {
-          setAnswers((prev) => ({ ...prev, [questionId]: answer }));
-        };
+  label { font-size: 0.78rem; font-weight: 500; color: #444; letter-spacing: 0.3px; }
 
-        const calculateScore = () => {
-          let correct = 0;
-          questions.forEach((q) => {
-            if (answers[q.id] === q.correctAnswer) correct++;
-          });
-          const tabPenalty = tabSwitches * TAB_SWITCH_PENALTY;
-          const finalScore = Math.max(0, correct - tabPenalty);
-          return { rawScore: correct, tabPenalty, finalScore };
-        };
+  input[type="text"], input[type="date"], select, textarea {
+    width: 100%; padding: 10px 13px; border: 1.5px solid var(--lightgray); border-radius: 3px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--black);
+    background: #FAFAFA; outline: none; transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--green); background: white; }
+  textarea { resize: vertical; min-height: 80px; }
 
-        const handleSubmitQuiz = async () => {
-          if (quizSubmitted) return;
-          const { rawScore, tabPenalty, finalScore } = calculateScore();
-          const totalQuestions = questions.length;
-          const percentage = ((finalScore / totalQuestions) * 100).toFixed(1);
-          const result = {
-            studentName, indexNumber,
-            department: "metallurgical",
-            sheet: "Sheet1",
-            rawScore, tabSwitches, tabPenalty, finalScore, totalQuestions, percentage,
-            timestamp: new Date().toLocaleString(),
-          };
-          setQuizSubmitted(true);
-          try {
-            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQ49ebOvpIuttMBXh7gkCRU857mK6T0Hr3v4yiEisPzHjwHdaPFyD744kWGVu81KymqA/exec";
-            await fetch(GOOGLE_SCRIPT_URL, {
-              method: "POST", mode: "no-cors",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(result),
-            });
-          } catch (error) {
-            console.error("Error submitting results:", error);
-          }
-          setView("thankyou");
-        };
+  .radio-group { display: flex; gap: 20px; align-items: center; padding: 10px 13px; border: 1.5px solid var(--lightgray); border-radius: 3px; background: #FAFAFA; }
+  .radio-group label { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.88rem; color: var(--black); }
+  .radio-group input[type="radio"] { width: auto; accent-color: var(--green); }
 
-        const handleAdminLogin = () => {
-          if (adminPassword === ADMIN_PASSWORD) setView("admin");
-          else alert("Incorrect password");
-        };
+  .check-group { display: flex; flex-wrap: wrap; gap: 12px 24px; padding: 12px 13px; border: 1.5px solid var(--lightgray); border-radius: 3px; background: #FAFAFA; }
+  .check-group label { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.88rem; color: var(--black); }
+  .check-group input[type="checkbox"] { width: auto; accent-color: var(--green); }
 
-        const AdminView = () => {
-          const [results, setResults] = useState([]);
-          const [loading, setLoading] = useState(true);
+  .btn-row { display: flex; gap: 14px; justify-content: flex-end; margin-top: 28px; flex-wrap: wrap; }
+  .btn { padding: 12px 28px; border: none; border-radius: 3px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:hover { background: #133a22; transform: translateY(-1px); }
+  .btn-gold { background: var(--gold); color: var(--black); }
+  .btn-gold:hover { background: #b0841f; transform: translateY(-1px); }
+  .btn-outline { background: white; color: var(--green); border: 1.5px solid var(--green); }
+  .btn-outline:hover { background: var(--offwhite); }
 
-          useEffect(() => { loadResultsFromSheets(); }, []);
+  #successMsg, #errorMsg { display: none; border-radius: 3px; padding: 14px 20px; margin-top: 20px; font-size: 0.88rem; text-align: center; }
+  #successMsg { background: #e8f5e9; border: 1.5px solid #66bb6a; color: #2e7d32; }
+  #errorMsg { background: #fdecea; border: 1.5px solid #ef9a9a; color: #b71c1c; }
+  .spinner { display: none; text-align: center; padding: 10px; color: var(--midgray); font-size: 0.85rem; }
 
-          const loadResultsFromSheets = async () => {
-            setLoading(true);
-            try {
-              const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQ49ebOvpIuttMBXh7gkCRU857mK6T0Hr3v4yiEisPzHjwHdaPFyD744kWGVu81KymqA/exec";
-              const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=Sheet1`);
-              const data = await response.json();
-              setResults(data.filter(record => !record.sheet || record.sheet === 'Sheet1'));
-              setLoading(false);
-            } catch (error) {
-              console.error("Error loading results:", error);
-              setLoading(false);
-            }
-          };
+  .session-info { background: var(--offwhite); border: 1px solid var(--lightgray); border-radius: 3px; padding: 14px 18px; margin-bottom: 24px; font-size: 0.83rem; color: #444; line-height: 1.8; }
+  .session-info strong { color: var(--green); }
 
-          const calculateStats = () => {
-            if (results.length === 0) return { highest: 0, average: 0, lowest: 0 };
-            const scores = results.map((r) => {
-              const n = typeof r.finalScore === 'string' ? parseFloat(r.finalScore.toString().split("/")[0]) : parseFloat(r.finalScore);
-              return isNaN(n) ? 0 : n;
-            });
-            return {
-              highest: Math.max(...scores),
-              lowest: Math.min(...scores),
-              average: (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1),
-            };
-          };
+  .records-section { max-width: 700px; margin: 0 auto 40px; background: white; border-radius: 4px; box-shadow: var(--shadow); overflow: hidden; }
+  .records-header { background: var(--black); color: white; padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; }
+  .records-header span { font-family: 'EB Garamond', serif; font-size: 1rem; font-weight: 600; }
+  .records-count { background: var(--gold); color: var(--black); border-radius: 20px; padding: 2px 12px; font-size: 0.78rem; font-weight: 600; }
 
-          const stats = calculateStats();
+  table { width: 100%; border-collapse: collapse; font-size: 0.80rem; }
+  thead tr { background: var(--offwhite); border-bottom: 2px solid var(--lightgray); }
+  th { padding: 10px 12px; text-align: left; font-weight: 600; color: #444; font-size: 0.72rem; letter-spacing: 0.8px; text-transform: uppercase; }
+  tbody tr { border-bottom: 1px solid var(--lightgray); transition: background 0.15s; }
+  tbody tr:hover { background: #FFFBF0; }
+  td { padding: 9px 12px; }
+  .empty-table { text-align: center; padding: 36px; color: var(--midgray); font-size: 0.85rem; }
 
-          return (
-            <div className="min-h-screen bg-gray-50 p-6">
-              <div className="max-w-7xl mx-auto">
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold">Admin Dashboard - METE 451 Quiz</h2>
-                    <div className="flex gap-2">
-                      <button onClick={() => loadResultsFromSheets()} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Refresh</button>
-                      <button onClick={() => setView("start")} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Exit Admin</button>
-                    </div>
-                  </div>
-                  {loading ? (
-                    <p>Loading results from Google Sheets...</p>
-                  ) : results.length === 0 ? (
-                    <p className="text-gray-500">No quiz submissions yet for Metallurgical Engineering.</p>
-                  ) : (
-                    <>
-                      <div className="mb-4">
-                        <p className="text-lg font-semibold text-gray-700">Metallurgical Engineering - Hydrocyclone & Classification Quiz</p>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-blue-50 rounded-lg p-4">
-                          <p className="text-sm text-blue-600 font-semibold mb-1">Total Submissions</p>
-                          <p className="text-3xl font-bold text-blue-700">{results.length}</p>
-                        </div>
-                        <div className="bg-green-50 rounded-lg p-4">
-                          <p className="text-sm text-green-600 font-semibold mb-1">Highest Score</p>
-                          <p className="text-3xl font-bold text-green-700">{stats.highest}/15</p>
-                        </div>
-                        <div className="bg-yellow-50 rounded-lg p-4">
-                          <p className="text-sm text-yellow-600 font-semibold mb-1">Average Score</p>
-                          <p className="text-3xl font-bold text-yellow-700">{stats.average}/15</p>
-                        </div>
-                        <div className="bg-red-50 rounded-lg p-4">
-                          <p className="text-sm text-red-600 font-semibold mb-1">Lowest Score</p>
-                          <p className="text-3xl font-bold text-red-700">{stats.lowest}/15</p>
-                        </div>
-                      </div>
-                      <div className="mb-4">
-                        <p className="text-xs text-gray-500">Data synced with Google Sheets (Sheet1) | Each tab switch = -0.5 points penalty</p>
-                      </div>
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              {["#","Name","Index Number","Raw Score","Tab Switches","Penalty","Final Score","Percentage","Timestamp"].map(h => (
-                                <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{h}</th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {results.map((result, idx) => (
-                              <tr key={idx}>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-gray-600">{idx + 1}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm">{result.studentName}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm">{result.indexNumber}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold">{result.rawScore}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm">{result.tabSwitches}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm text-red-600">{result.tabPenalty}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm"><span className="font-bold text-indigo-600">{result.finalScore}</span></td>
-                                <td className="px-4 py-4 whitespace-nowrap"><span className="px-2 py-1 rounded text-sm font-semibold bg-gray-100 text-gray-800">{result.percentage}%</span></td>
-                                <td className="px-4 py-4 whitespace-nowrap text-xs text-gray-500">{result.timestamp}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div className="text-center mt-6"><p className="text-sm text-gray-500">©Team Benny</p></div>
-              </div>
-            </div>
-          );
-        };
+  @media (max-width: 600px) {
+    .header { padding: 18px; }
+    .form-inner { padding: 22px 18px; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .btn-row { flex-direction: column; }
+    .btn { width: 100%; text-align: center; }
+    .steps { padding: 14px 18px 0; }
+    .step-line { width: 20px; }
+  }
+</style>
+</head>
+<body>
 
-        if (view === "admin") return <AdminView />;
+<div class="header">
+  <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/KNUST_logo.png/200px-KNUST_logo.png" alt="KNUST Logo" onerror="this.style.display='none'"/>
+  <div class="header-text">
+    <h1>Kwame Nkrumah University of Science and Technology, Kumasi</h1>
+    <p>Gender, Inclusion and Vulnerability (GIV) Office</p>
+  </div>
+</div>
 
-        if (view === "start") {
-          return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-              <div className="max-w-md w-full">
-                <div className="bg-white rounded-lg shadow-xl p-8">
-                  <div className="text-center mb-6">
-                    <Lock className="mx-auto h-12 w-12 text-indigo-600 mb-3" />
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">METE 451 Quiz</h1>
-                    <p className="text-gray-600">Metallurgical Engineering</p>
-                    <p className="text-sm text-gray-500 mt-1">Hydrocyclone & Classification</p>
-                  </div>
-                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-                    <div className="flex">
-                      <AlertCircle className="h-5 w-5 text-yellow-400 mr-2 flex-shrink-0" />
-                      <div className="text-sm text-yellow-700">
-                        <p className="font-semibold mb-1">Quiz Rules:</p>
-                        <ul className="list-disc list-inside space-y-1">
-                          <li>15 questions total</li>
-                          <li>20 seconds per question</li>
-                          <li>Auto-advances when time expires</li>
-                          <li>Tab switching: -0.5 points each</li>
-                          <li>Text selection disabled</li>
-                          <li>Right-click disabled</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                      <input type="text" value={studentName} onChange={(e) => setStudentName(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                        placeholder="Enter your full name" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Index Number</label>
-                      <input type="text" value={indexNumber} onChange={(e) => setIndexNumber(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                        placeholder="Enter your index number" />
-                    </div>
-                    <button onClick={handleStartQuiz} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200">
-                      Start Quiz
-                    </button>
-                    <button onClick={() => setShowAdminLogin(!showAdminLogin)} className="w-full text-sm text-gray-500 hover:text-gray-700 mt-4">
-                      {showAdminLogin ? "Hide Admin Login" : "Admin Login"}
-                    </button>
-                    {showAdminLogin && (
-                      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                        <input type="password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)}
-                          placeholder="Admin Password" className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-2" />
-                        <button onClick={handleAdminLogin} className="w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700">Login as Admin</button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="text-center mt-6"><p className="text-sm text-gray-400">©Team Benny</p></div>
-              </div>
-            </div>
-          );
-        }
+<div class="title-band">Examination Monitoring Form &ndash; Students with Disabilities</div>
 
-        if (view === "thankyou") {
-          return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-              <div className="max-w-md w-full">
-                <div className="bg-white rounded-lg shadow-xl p-8">
-                  <div className="text-center">
-                    <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
-                    <h2 className="text-3xl font-bold text-gray-800 mb-2">Quiz Submitted Successfully!</h2>
-                    <p className="text-gray-600 mb-6">Thank you, {studentName}</p>
-                    <div className="bg-blue-50 rounded-lg p-6 mb-6">
-                      <p className="text-gray-700 text-lg">Your responses have been recorded and submitted to your instructor.</p>
-                    </div>
-                    <p className="text-sm text-gray-500">Results will be shared by your instructor.</p>
-                  </div>
-                </div>
-                <div className="text-center mt-6"><p className="text-sm text-gray-400">©Team Benny</p></div>
-              </div>
-            </div>
-          );
-        }
+<!-- PAGE 1: SESSION SETUP -->
+<div class="page active" id="page1">
+  <div class="container">
+    <div class="steps">
+      <div class="step-item active"><div class="step-circle">1</div>&nbsp;Session Setup</div>
+      <div class="step-line"></div>
+      <div class="step-item"><div class="step-circle">2</div>&nbsp;Student Record</div>
+      <div class="step-line"></div>
+      <div class="step-item"><div class="step-circle">3</div>&nbsp;Done</div>
+    </div>
+    <div class="form-inner">
+      <div class="section-label">Monitoring Session Details</div>
 
-        const question = questions[currentQuestion];
-        const progress = ((currentQuestion + 1) / questions.length) * 100;
+      <div class="field">
+        <label>Date of Monitoring</label>
+        <input type="date" id="monDate" required/>
+      </div>
 
-        const handleNext = () => {
-          if (currentQuestion < questions.length - 1) {
-            setCurrentQuestion((prev) => prev + 1);
-            setQuestionTimeLeft(TIME_PER_QUESTION);
-          } else {
-            handleSubmitQuiz();
-          }
-        };
+      <div class="field">
+        <label>Focal Person / Monitor</label>
+        <input type="text" id="monitor1" placeholder="e.g. Dr. B. Koomson"/>
+      </div>
 
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-            <div className="max-w-3xl mx-auto">
-              <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex items-center space-x-4">
-                    <span className="text-sm font-semibold text-gray-700">{studentName} ({indexNumber})</span>
-                    <span className="text-xs px-2 py-1 bg-indigo-100 text-indigo-800 rounded">Metallurgical Engineering</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    {tabSwitches > 0 && (
-                      <span className="text-sm text-red-600 font-semibold">⚠️ Switches: {tabSwitches} (-{(tabSwitches * TAB_SWITCH_PENALTY).toFixed(1)})</span>
-                    )}
-                    <div className="flex items-center space-x-2">
-                      <Timer className={`h-5 w-5 ${questionTimeLeft <= 5 ? "text-red-600" : "text-indigo-600"}`} />
-                      <span className={`font-mono font-bold text-xl ${questionTimeLeft <= 5 ? "text-red-600 animate-pulse" : "text-gray-700"}`}>
-                        {questionTimeLeft}s
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>Question {currentQuestion + 1} of {questions.length}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-indigo-600 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
-                </div>
-              </div>
+      <div class="field">
+        <label>College</label>
+        <select id="collegeSelect">
+          <option value="">-- Select College --</option>
+          <option>College of Agriculture and Natural Resources</option>
+          <option>College of Art and Built Environment</option>
+          <option>College of Engineering</option>
+          <option>College of Health Sciences</option>
+          <option>College of Humanities and Social Sciences</option>
+          <option>College of Science</option>
+          <option>Obuasi Campus</option>
+        </select>
+      </div>
 
-              <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-lg font-bold text-gray-800 mb-6 leading-relaxed">{question.question}</h2>
-                <div className="space-y-3">
-                  {question.options.map((option, idx) => (
-                    <label key={idx} className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition duration-200">
-                      <input type="radio" name={`question-${question.id}`} value={option}
-                        checked={answers[question.id] === option}
-                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                        className="mt-1 mr-3 h-4 w-4 text-indigo-600 flex-shrink-0" />
-                      <span className="text-gray-700">{option}</span>
-                    </label>
-                  ))}
-                </div>
-                <div className="flex justify-end mt-8">
-                  <button onClick={handleNext}
-                    className={`px-8 py-3 rounded-lg font-semibold ${currentQuestion === questions.length - 1 ? "bg-green-600 hover:bg-green-700" : "bg-indigo-600 hover:bg-indigo-700"} text-white`}>
-                    {currentQuestion === questions.length - 1 ? "Submit Quiz" : "Next Question"}
-                  </button>
-                </div>
-              </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="startSession()">Start Recording &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-              <div className="text-center mt-6"><p className="text-sm text-gray-400">©Team Benny</p></div>
-            </div>
+<!-- PAGE 2: STUDENT RECORD -->
+<div class="page" id="page2">
+  <div class="container">
+    <div class="steps">
+      <div class="step-item done"><div class="step-circle">&#10003;</div>&nbsp;Session Setup</div>
+      <div class="step-line done"></div>
+      <div class="step-item active"><div class="step-circle">2</div>&nbsp;Student Record</div>
+      <div class="step-line"></div>
+      <div class="step-item"><div class="step-circle">3</div>&nbsp;Done</div>
+    </div>
+    <div class="form-inner">
+
+      <div class="session-info" id="sessionInfo"></div>
+
+      <div class="section-label">Student Information</div>
+
+      <div class="grid-2" style="margin-bottom:18px;">
+        <div class="field" style="margin-bottom:0;">
+          <label>Full Name of Student</label>
+          <input type="text" id="studentName" placeholder="Enter full name"/>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Index Number</label>
+          <input type="text" id="indexNo" placeholder="e.g. 1234567"/>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:18px;">
+        <div class="field" style="margin-bottom:0;">
+          <label>Programme of Study</label>
+          <select id="programmeSelect">
+            <option value="">-- Select Programme --</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Year of Study</label>
+          <select id="year">
+            <option value="">-- Select Year --</option>
+            <option>Year 1</option>
+            <option>Year 2</option>
+            <option>Year 3</option>
+            <option>Year 4</option>
+            <option>Year 5</option>
+            <option>Postgraduate</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Examination Venue</label>
+        <input type="text" id="venue" placeholder="e.g. Room 101, FECE Block"/>
+      </div>
+
+      <div class="section-label" style="margin-top:4px;">Accessibility &amp; Accommodation</div>
+
+      <div class="grid-2" style="margin-bottom:18px;">
+        <div class="field" style="margin-bottom:0;">
+          <label>Access to Venue</label>
+          <div class="radio-group">
+            <label><input type="radio" name="access" value="Yes"/> Yes</label>
+            <label><input type="radio" name="access" value="No"/> No</label>
           </div>
-        );
-      };
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Accommodation Provided</label>
+          <div class="check-group">
+            <label><input type="checkbox" value="ET"/> Extra Time (ET)</label>
+            <label><input type="checkbox" value="AD"/> Assistive Device (AD)</label>
+            <label><input type="checkbox" value="SA"/> Signing Arrangements (SA)</label>
+            <label><input type="checkbox" value="S"/> Scribes (S)</label>
+          </div>
+        </div>
+      </div>
 
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<QuizApp />);
-    </script>
-  </body>
+      <div class="field">
+        <label>Other Accommodation (if any)</label>
+        <input type="text" id="otherAccom" placeholder="Specify other accommodation"/>
+      </div>
+
+      <div class="field">
+        <label>Gaps / Remarks</label>
+        <textarea id="remarks" placeholder="Note any gaps, challenges or observations..."></textarea>
+      </div>
+
+      <div class="spinner" id="spinner">Saving record, please wait...</div>
+      <div id="successMsg">&#10003; Record saved successfully to the sheet.</div>
+      <div id="errorMsg">&#10007; Could not confirm save. Please check connection and try again.</div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="viewRecords()">View Records</button>
+        <button class="btn btn-outline" onclick="backToSetup()">&#8592; Back</button>
+        <button class="btn btn-gold" onclick="addAnother()">+ Add Another Student</button>
+        <button class="btn btn-primary" onclick="submitEntry()">Save Record</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: RECORDS VIEW -->
+<div class="page" id="page3">
+  <div class="container">
+    <div class="form-inner">
+      <div class="section-label">Records Submitted This Session</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Date</th><th>Monitor</th><th>College</th>
+              <th>Student Name</th><th>Index No.</th><th>Programme</th>
+              <th>Year</th><th>Venue</th><th>Access</th><th>Accommodation</th><th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="12" class="empty-table">No records submitted yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="btn-row" style="margin-top:24px;">
+        <button class="btn btn-outline" onclick="showPage('page2')">&#8592; Back to Form</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycby1NN0rvWm25GmoizjAxz33OoNkvRi97PraHaEeYK7BynYVrDM74oK9U9ziaK0PWfwGGg/exec';
+
+  const programmes = {
+    'College of Agriculture and Natural Resources': ['BSc. Agriculture','BSc. Agricultural Biotechnology','BSc. Agribusiness Management','BSc. Landscape Design and Management','BSc. Natural Resources Management','BSc. Forest Resources Technology','BSc. Aquaculture and Water Resources Management','BSc. Packaging Technology'],
+    'College of Art and Built Environment': ['BSc. Architecture','BSc. Construction Technology and Management','BSc. Quantity Surveying and Construction Economics','BSc. Development Planning','BSc. Human Settlement Planning','BSc. Land Economy','BSc. Real Estate','BFA. Fine Art and Curatorial Practice','BA. Communication Design (Graphic Design)','BA. Integrated Rural Art and Industry','BA. Publishing Studies','BSc. Metal Product Design Technology','BSc. Textile Design and Technology','BSc. Fashion Design','BSc. Ceramics Technology','B.Ed. Junior High School Specialism'],
+    'College of Engineering': ['BSc. Aerospace Engineering','BSc. Agricultural Engineering','BSc. Automobile Engineering','BSc. Biomedical Engineering','BSc. Chemical Engineering','BSc. Civil Engineering','BSc. Computer Engineering','BSc. Electrical/Electronic Engineering','BSc. Geological Engineering','BSc. Geomatic (Geodetic) Engineering','BSc. Industrial Engineering','BSc. Marine Engineering','BSc. Materials Engineering','BSc. Mechanical Engineering','BSc. Metallurgical Engineering','BSc. Petrochemical Engineering','BSc. Petroleum Engineering','BSc. Telecommunication Engineering'],
+    'College of Health Sciences': ['Bachelor of Dental Surgery (BDS)','Doctor of Veterinary Medicine (DVM)','BSc. Disability and Rehabilitation Studies','Bachelor of Herbal Medicine (BHM)','BSc. Human Biology (Medicine)','BSc. Medical Laboratory Science','BSc. Medical Imaging','BSc. Midwifery','BSc. Nursing','BSc. Physiotherapy and Sports Science','Pharm D (Doctor of Pharmacy)'],
+    'College of Humanities and Social Sciences': ['BA. Akan Language and Culture','BA. Economics','BA. English','BA. French and Francophone Studies','BA. Geography and Rural Development','BA. History','BA. Linguistics','BA. Media and Communication Studies','BA. Political Studies','Bachelor of Public Administration','BA. Religious Studies','BA. Sociology','BA. Social Work','BSc. Business Administration (Human Resource Mgt./Management)','BSc. Business Administration (Marketing/International Business)','BSc. Business Administration (Accounting/Banking and Finance)','BSc. Business Administration (Logistics and Supply Chain Mgt/Bus. Info. Tech.)','BSc. Hospitality and Tourism Management','LLB'],
+    'College of Science': ['BSc. Biochemistry','BSc. Food Science and Technology','BSc. Dietetics','BSc. Human Nutrition','BSc. Biological Science','BSc. Environmental Sciences','BSc. Chemistry','BSc. Computer Science','BSc. Information Technology (IT)','BSc. Mathematics','BSc. Actuarial Science','BSc. Statistics','BSc. Physics','BSc. Meteorology and Climate Science','Doctor of Optometry'],
+    'Obuasi Campus': ['BSc. Civil Engineering (Obuasi Campus)','BSc. Electrical/Electronic Engineering (Obuasi Campus)','BSc. Geological Engineering (Obuasi Campus)','BSc. Geomatic (Geodetic) Engineering (Obuasi Campus)','BSc. Materials Engineering (Obuasi Campus)','BSc. Mechanical Engineering (Obuasi Campus)','BSc. Metallurgical Engineering (Obuasi Campus)','BSc. Medical Laboratory Science (Obuasi Campus)','BSc. Midwifery (Obuasi Campus)','BSc. Nursing (Obuasi Campus)','BBA (HRM/Management) (Obuasi Campus)','BBA (Marketing/International Business) (Obuasi Campus)','BBA (Accounting/Banking and Finance) (Obuasi Campus)','BBA (Logistics & Supply Chain Mgt/Bus. Info. Tech.) (Obuasi Campus)','BSc. Environmental Sciences (Obuasi Campus)']
+  };
+
+  let sessionDate = '', sessionMonitor = '', sessionCollege = '';
+  const records = [];
+
+  function startSession() {
+    const date = document.getElementById('monDate').value;
+    const monitor = document.getElementById('monitor1').value.trim();
+    const college = document.getElementById('collegeSelect').value;
+    if (!date || !monitor || !college) { alert('Please complete all session details.'); return; }
+    sessionDate = formatDate(date);
+    sessionMonitor = monitor;
+    sessionCollege = college;
+    // load programmes
+    const sel = document.getElementById('programmeSelect');
+    sel.innerHTML = '<option value="">-- Select Programme --</option>';
+    (programmes[college] || []).forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
+    document.getElementById('sessionInfo').innerHTML =
+      `<strong>Date:</strong> ${sessionDate}&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Monitor:</strong> ${sessionMonitor}&nbsp;&nbsp;|&nbsp;&nbsp;<strong>College:</strong> ${sessionCollege}`;
+    showPage('page2');
+  }
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function backToSetup() { showPage('page1'); }
+
+  function viewRecords() { renderTable(); showPage('page3'); }
+
+  function submitEntry() {
+    const name = document.getElementById('studentName').value.trim();
+    const index = document.getElementById('indexNo').value.trim();
+    const prog = document.getElementById('programmeSelect').value;
+    const year = document.getElementById('year').value;
+    const venue = document.getElementById('venue').value.trim();
+    const access = document.querySelector('input[name="access"]:checked');
+    const boxes = document.querySelectorAll('.check-group input[type="checkbox"]:checked');
+    const other = document.getElementById('otherAccom').value.trim();
+    const remarks = document.getElementById('remarks').value.trim();
+
+    if (!name || !index || !prog || !year || !venue || !access) { alert('Please fill in all required fields and select access status.'); return; }
+
+    let accom = Array.from(boxes).map(c => c.value).join(', ');
+    if (other) accom += (accom ? ', ' : '') + other;
+
+    const entry = {
+      Date: sessionDate, Monitor: sessionMonitor, College: sessionCollege,
+      StudentName: name, IndexNo: index, Programme: prog, Year: year,
+      Venue: venue, AccessToVenue: access.value,
+      AccommodationProvided: accom || 'None', Remarks: remarks || ''
+    };
+
+    records.push({ ...entry, 'Student Name': name, 'Index No': index, 'Access to Venue': access.value, 'Accommodation Provided': accom || 'None', 'Gaps/Remarks': remarks || '' });
+
+    document.getElementById('spinner').style.display = 'block';
+    document.getElementById('successMsg').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'none';
+
+    fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    }).then(() => {
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+      setTimeout(() => document.getElementById('successMsg').style.display = 'none', 4000);
+      clearFields();
+    }).catch(() => {
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('errorMsg').style.display = 'block';
+    });
+  }
+
+  function addAnother() {
+    clearFields();
+    document.getElementById('successMsg').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'none';
+    window.scrollTo(0, 0);
+  }
+
+  function clearFields() {
+    ['studentName','indexNo','venue','otherAccom','remarks'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('programmeSelect').value = '';
+    document.getElementById('year').value = '';
+    document.querySelectorAll('input[name="access"]').forEach(r => r.checked = false);
+    document.querySelectorAll('.check-group input[type="checkbox"]').forEach(c => c.checked = false);
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    if (!records.length) { tbody.innerHTML = '<tr><td colspan="12" class="empty-table">No records submitted yet.</td></tr>'; return; }
+    tbody.innerHTML = records.map((r, i) => `<tr>
+      <td>${i+1}</td><td>${r.Date}</td><td>${r.Monitor}</td><td>${r.College}</td>
+      <td>${r['Student Name']}</td><td>${r['Index No']}</td><td>${r.Programme}</td>
+      <td>${r.Year}</td><td>${r.Venue}</td>
+      <td><strong style="color:${r['Access to Venue']==='Yes'?'#1B4D2E':'#8B0000'}">${r['Access to Venue']}</strong></td>
+      <td>${r['Accommodation Provided']}</td><td>${r['Gaps/Remarks']||'—'}</td>
+    </tr>`).join('');
+  }
+
+  function formatDate(d) {
+    const [y,m,day] = d.split('-');
+    const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${parseInt(day)} ${mo[parseInt(m)-1]} ${y}`;
+  }
+</script>
+</body>
 </html>
